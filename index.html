@@ -217,15 +217,26 @@
 
     <script>
         function calculate() {
-            const birthdateInput = document.getElementById('birthdate');
+            const month = document.getElementById('month').value;
+            const day = document.getElementById('day').value;
+            const year = document.getElementById('year').value;
             const resultsDiv = document.getElementById('results');
             
-            if (!birthdateInput.value) {
-                resultsDiv.innerHTML = '<div class="error">Please enter your birthdate.</div>';
+            // Validate inputs
+            if (!month || !day || !year) {
+                resultsDiv.innerHTML = '<div class="error">Please fill in all date fields.</div>';
                 return;
             }
             
-            const birthDate = new Date(birthdateInput.value);
+            // Validate day range
+            const dayNum = parseInt(day);
+            if (dayNum < 1 || dayNum > 31) {
+                resultsDiv.innerHTML = '<div class="error">Please enter a valid day (1-31).</div>';
+                return;
+            }
+            
+            // Create birthdate
+            const birthDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
             const today = new Date();
             const centuryEnd = new Date('1999-12-31');
             const century21Start = new Date('2000-01-01');
@@ -233,6 +244,14 @@
             // Validate birthdate
             if (birthDate > today) {
                 resultsDiv.innerHTML = '<div class="error">Birthdate cannot be in the future.</div>';
+                return;
+            }
+            
+            // Check if the date is valid (handles invalid dates like Feb 30)
+            if (birthDate.getMonth() !== parseInt(month) - 1 || 
+                birthDate.getDate() !== parseInt(day) ||
+                birthDate.getFullYear() !== parseInt(year)) {
+                resultsDiv.innerHTML = '<div class="error">Please enter a valid date.</div>';
                 return;
             }
             
