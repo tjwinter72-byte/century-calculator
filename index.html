@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Century Life Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+        
+        input[type="date"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+        }
+        
+        .results {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .result-item {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .century-20th {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .century-21st {
+            border-left: 4px solid #27ae60;
+        }
+        
+        .crossover {
+            border-left: 4px solid #f39c12;
+        }
+        
+        .percentage {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .label {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 5px;
+        }
+        
+        .error {
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #fadbd8;
+            margin-top: 20px;
+        }
+        
+        .note {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4f8;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            font-size: 0.9em;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕐 Century Life Calculator</h1>
+        
+        <div class="input-group">
+            <label for="birthdate">Enter Your Birthdate:</label>
+            <input type="date" id="birthdate" max="2024-12-31">
+        </div>
+        
+        <button class="calculate-btn" onclick="calculate()">Calculate My Century Split</button>
+        
+        <div id="results"></div>
+        
+        <div class="note">
+            <strong>Note:</strong> For the purposes of this calculator, the 20th century ended on December 31, 1999, and the 21st century began on January 1, 2000.
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            const birthdateInput = document.getElementById('birthdate');
+            const resultsDiv = document.getElementById('results');
+            
+            if (!birthdateInput.value) {
+                resultsDiv.innerHTML = '<div class="error">Please enter your birthdate.</div>';
+                return;
+            }
+            
+            const birthDate = new Date(birthdateInput.value);
+            const today = new Date();
+            const centuryEnd = new Date('1999-12-31');
+            const century21Start = new Date('2000-01-01');
+            
+            // Validate birthdate
+            if (birthDate > today) {
+                resultsDiv.innerHTML = '<div class="error">Birthdate cannot be in the future.</div>';
+                return;
+            }
+            
+            // Calculate total days lived
+            const totalDaysLived = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24));
+            
+            let daysIn20th = 0;
+            let daysIn21st = 0;
+            
+            if (birthDate <= centuryEnd) {
+                // Born in 20th century or earlier
+                if (today <= centuryEnd) {
+                    // Still in 20th century (theoretical)
+                    daysIn20th = totalDaysLived;
+                    daysIn21st = 0;
+                } else {
+                    // Lived in both centuries
+                    daysIn20th = Math.floor((centuryEnd - birthDate) / (1000 * 60 * 60 * 24)) + 1;
+                    daysIn21st = totalDaysLived - daysIn20th;
+                }
+            } else {
+                // Born in 21st century
+                daysIn20th = 0;
+                daysIn21st = totalDaysLived;
+            }
+            
+            // Calculate percentages
+            const percent20th = totalDaysLived > 0 ? (daysIn20th / totalDaysLived) * 100 : 0;
+            const percent21st = totalDaysLived > 0 ? (daysIn21st / totalDaysLived) * 100 : 0;
+            
+            // Calculate crossover date (when 50% of life was in each century)
+            let crossoverDate = null;
+            if (birthDate <= centuryEnd && daysIn20th > 0) {
+                const daysToEqual = daysIn20th;
+                crossoverDate = new Date(century21Start.getTime() + (daysToEqual * 24 * 60 * 60 * 1000));
+                
+                // Check if crossover date is in the future
+                if (crossoverDate > today) {
+                    // Calculate when it will happen
+                    const daysUntilCrossover = Math.floor((crossoverDate - today) / (1000 * 60 * 60 * 24));
+                    crossoverDate = { future: true, date: crossoverDate, daysUntil: daysUntilCrossover };
+                }
+            }
+            
+            // Display results
+            let resultsHTML = '<div class="results">';
+            
+            resultsHTML += `
+                <div class="result-item century-20th">
+                    <div class="label">20th Century (Born - Dec 31, 1999)</div>
+                    <div class="percentage">${percent20th.toFixed(2)}%</div>
+                    <small>${daysIn20th.toLocaleString()} days</small>
+                </div>
+            `;
+            
+            resultsHTML += `
+                <div class="result-item century-21st">
+                    <div class="label">21st Century (Jan 1, 2000 - Present)</div>
+                    <div class="percentage">${percent21st.toFixed(2)}%</div>
+                    <small>${daysIn21st.toLocaleString()} days</small>
+                </div>
+            `;
+            
+            if (crossoverDate) {
+                if (crossoverDate.future) {
+                    resultsHTML += `
+                        <div class="result-item crossover">
+                            <div class="label">Equal Split Date (Future)</div>
+                            <div class="percentage">${crossoverDate.date.toLocaleDateString()}</div>
+                            <small>In ${crossoverDate.daysUntil.toLocaleString()} days, you'll have lived equally in both centuries</small>
+                        </div>
+                    `;
+                } else {
+                    resultsHTML += `
+                        <div class="result-item crossover">
+                            <div class="label">Equal Split Date (Past)</div>
+                            <div class="percentage">${crossoverDate.toLocaleDateString()}</div>
+                            <small>You lived equally in both centuries on this date</small>
+                        </div>
+                    `;
+                }
+            } else if (birthDate > centuryEnd) {
+                resultsHTML += `
+                    <div class="result-item crossover">
+                        <div class="label">Equal Split</div>
+                        <div class="percentage">Not Applicable</div>
+                        <small>You were born in the 21st century, so you haven't lived in both centuries</small>
+                    </div>
+                `;
+            } else if (daysIn21st === 0) {
+                resultsHTML += `
+                    <div class="result-item crossover">
+                        <div class="label">Equal Split</div>
+                        <div class="percentage">Not Applicable</div>
+                        <small>You lived entirely in the 20th century</small>
+                    </div>
+                `;
+            }
+            
+            resultsHTML += '</div>';
+            
+            resultsDiv.innerHTML = resultsHTML;
+        }
+        
+        // Allow Enter key to calculate
+        document.getElementById('birthdate').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculate();
+            }
+        });
+        
+        // Set max date to today
+        document.getElementById('birthdate').max = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>
