@@ -55,7 +55,7 @@
             font-size: 1.1em;
         }
         
-        input[type="date"] {
+        input[type="number"], select {
             width: 100%;
             padding: 15px;
             border: 2px solid #e0e0e0;
@@ -65,10 +65,30 @@
             background: white;
         }
         
-        input[type="date"]:focus {
+        .date-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .date-input-container > * {
+            flex: 1;
+        }
+        
+        input[type="number"]:focus, select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        /* Remove spinner arrows from number inputs */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type="number"] {
+            -moz-appearance: textfield;
         }
         
         .calculate-btn {
@@ -165,7 +185,25 @@
         
         <div class="input-group">
             <label for="birthdate">Enter Your Birthdate:</label>
-            <input type="date" id="birthdate" max="2024-12-31">
+            <div class="date-input-container">
+                <select id="month" required>
+                    <option value="">Month</option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+                <input type="number" id="day" placeholder="Day" min="1" max="31" required inputmode="numeric">
+                <input type="number" id="year" placeholder="Year" min="1900" max="2024" required inputmode="numeric">
+            </div>
         </div>
         
         <button class="calculate-btn" onclick="calculate()">Calculate My Century Split</button>
@@ -299,15 +337,27 @@
             resultsDiv.innerHTML = resultsHTML;
         }
         
-        // Allow Enter key to calculate
-        document.getElementById('birthdate').addEventListener('keypress', function(e) {
+        // Allow Enter key to calculate from any input
+        document.getElementById('month').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 calculate();
             }
         });
         
-        // Set max date to today
-        document.getElementById('birthdate').max = new Date().toISOString().split('T')[0];
+        document.getElementById('day').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculate();
+            }
+        });
+        
+        document.getElementById('year').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                calculate();
+            }
+        });
+        
+        // Set current year as max for year input
+        document.getElementById('year').max = new Date().getFullYear();
     </script>
 </body>
 </html>
